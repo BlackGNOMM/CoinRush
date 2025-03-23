@@ -5,191 +5,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NotCoin Game</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f9;
-            flex-direction: column;
-            text-align: center;
-        }
+    body {
+        font-family: 'Poppins', sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        height: 100vh;
+        margin: 0;
+        background: linear-gradient(135deg, #1e1e2f, #292943); /* градієнтний фон */
+        color: white;
+        text-align: center;
+    }
 
-        .counter {
-            font-size: 36px;
-            margin: 20px 0;
-        }
+    h1 {
+        font-size: 36px;
+        margin-bottom: 10px;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* Тінь для тексту */
+    }
 
-        .info {
-            margin: 20px;
-            font-size: 18px;
-        }
+    .counter {
+        font-size: 28px;
+        font-weight: bold;
+        margin: 15px 0;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 10px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
+    }
 
-        .upgrade, .autoclicker {
-            margin-top: 20px;
-        }
+    .click-image {
+        cursor: pointer;
+        width: 120px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 50%;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
 
-        .click-image {
-            cursor: pointer;
-            width: 100px;
-            transition: transform 0.3s ease;
-        }
+    .click-image:hover {
+        transform: scale(1.15);
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+    }
 
-        .click-image:hover {
-            transform: scale(1.1);
-        }
+    .info {
+        font-size: 18px;
+        margin-top: 10px;
+        opacity: 0.9;
+    }
 
-        .ddd {
-            position: relative;
-            margin-top: 30px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 400px;
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
-        }
+    .upgrade, .autoclicker {
+        margin-top: 15px;
+    }
 
-        .slots-container {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
+    .button {
+        padding: 12px 18px;
+        font-size: 18px;
+        font-weight: bold;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        background: linear-gradient(45deg, #ff416c, #ff4b2b); /* Градієнтна кнопка */
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+    }
 
-        .button {
-            padding: 10px;
-            font-size: 16px;
-            cursor: pointer;
-        }
+    .button:hover {
+        background: linear-gradient(45deg, #ff4b2b, #ff416c);
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(255, 0, 0, 0.5);
+    }
 
-        /* Анімація летючої монети */
-        .flying-coin {
-            position: absolute;
-            width: 50px;
-            transition: transform 1s ease-out, opacity 1s ease-in;
-            opacity: 1;
-            pointer-events: none;
-        }
+    .ddd {
+        position: relative;
+        margin-top: 40px;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 8px;
+        width: 80%;
+        max-width: 400px;
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+    }
 
-        /* Основний стиль */
-        body {
-            font-family: 'Poppins', sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #1e1e2f, #292943);
-            color: white;
-            text-align: center;
-        }
+    .slots-container {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 10px;
+        flex-wrap: wrap;
+    }
 
-        /* Заголовок */
-        h1 {
-            font-size: 36px;
-            margin-bottom: 10px;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
+    #slotsContainer button {
+        background: linear-gradient(45deg, #00c6ff, #0072ff);
+        color: white;
+        padding: 10px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
 
-        /* Лічильник */
-        .counter {
-            font-size: 28px;
-            font-weight: bold;
-            margin: 15px 0;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
-        }
+    #slotsContainer button:hover {
+        background: linear-gradient(45deg, #0072ff, #00c6ff);
+        transform: scale(1.1);
+    }
 
-        /* Монета (картинка) */
-        .click-image {
-            cursor: pointer;
-            width: 120px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border-radius: 50%;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-        }
+    .flying-coin {
+        position: absolute;
+        width: 40px;
+        transition: transform 1s ease-out, opacity 1s ease-in;
+        opacity: 1;
+        pointer-events: none;
+        filter: drop-shadow(0 0 10px rgba(255, 255, 0, 0.8)); /* додана тінь до монети */
+    }
+</style>
 
-        .click-image:hover {
-            transform: scale(1.15);
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
-        }
-
-        /* Опис гри */
-        .info {
-            font-size: 18px;
-            margin-top: 10px;
-            opacity: 0.9;
-        }
-
-        /* Контейнери для кнопок */
-        .upgrade, .autoclicker {
-            margin-top: 15px;
-        }
-
-        /* Гарні кнопки */
-        .button {
-            padding: 12px 18px;
-            font-size: 18px;
-            font-weight: bold;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            background: linear-gradient(45deg, #ff416c, #ff4b2b);
-            color: white;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
-        }
-
-        .button:hover {
-            background: linear-gradient(45deg, #ff4b2b, #ff416c);
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(255, 0, 0, 0.5);
-        }
-
-        /* Блок збереження гри */
-        .ddd {
-            position: relative;
-            margin-top: 40px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 400px;
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
-        }
-
-        /* Кнопки слотів */
-        #slotsContainer button {
-            background: linear-gradient(45deg, #00c6ff, #0072ff);
-            color: white;
-            padding: 10px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-
-        #slotsContainer button:hover {
-            background: linear-gradient(45deg, #0072ff, #00c6ff);
-            transform: scale(1.1);
-        }
-
-        /* Анімація летючої монети */
-        .flying-coin {
-            position: absolute;
-            width: 40px;
-            transition: transform 1s ease-out, opacity 1s ease-in;
-            opacity: 1;
-            pointer-events: none;
-            filter: drop-shadow(0 0 10px rgba(255, 255, 0, 0.8));
-        }
     </style>
 </head>
 <body>
@@ -242,11 +173,66 @@
         counter: 0,
         upgradeLevel: 1,
         autoClickerLevel: 0,
-        autoClickers: []
+        autoClickers: [],
+        clickMultiplier: 1 // Додаємо множник для кожного кліку
     };
 
     let slots = JSON.parse(localStorage.getItem("slots")) || [{id: 1, name: "Слот 1"}];
     let currentSlot = slots[0];
+
+    function incrementCounter(event) {
+        gameState.counter += gameState.clickMultiplier;  // Збільшуємо на множник
+        document.getElementById('counter').textContent = gameState.counter;
+        animateCoin(event);
+    }
+
+    function animateCoin(event) {
+        const coin = document.createElement('img');
+        coin.src = "image_no_bg.png";
+        coin.classList.add('flying-coin');
+        document.body.appendChild(coin);
+
+        const rect = event.target.getBoundingClientRect();
+        const startX = rect.left + rect.width / 2;
+        const startY = rect.top + rect.height / 2;
+
+        coin.style.left = `${startX}px`;
+        coin.style.top = `${startY}px`;
+
+        const endX = window.innerWidth / 2;
+        const endY = 100;
+
+        const deltaX = endX - startX;
+        const deltaY = endY - startY;
+
+        coin.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+
+        coin.addEventListener('transitionend', () => {
+            coin.remove();
+        });
+    }
+
+    function buyUpgrade() {
+        const upgradeCost = 10 * gameState.upgradeLevel;
+        if (gameState.counter >= upgradeCost) {
+            gameState.counter -= upgradeCost;
+            gameState.upgradeLevel++;
+            gameState.clickMultiplier++; // Збільшуємо множник за клік
+            updateUI();
+        } else {
+            alert("Немає достатньо NotCoins!");
+        }
+    }
+
+    function startAutoClicker() {
+        if (gameState.counter >= 50) {
+            gameState.counter -= 50;
+            gameState.autoClickerLevel++;
+            updateUI();
+        } else {
+            alert("Немає достатньо NotCoins!");
+        }
+    }
 
     function saveGameState() {
         localStorage.setItem(`notcoinGameState_${currentSlot.id}`, JSON.stringify(gameState));
@@ -257,8 +243,6 @@
         const savedState = localStorage.getItem(`notcoinGameState_${currentSlot.id}`);
         if (savedState) {
             gameState = JSON.parse(savedState);
-            clearAutoClickers();
-            restoreAutoClickers();
             updateUI();
             alert(`Прогрес завантажено зі слота ${currentSlot.name}!`);
         } else {
@@ -272,8 +256,7 @@
     }
 
     function resetGame() {
-        gameState = { counter: 0, upgradeLevel: 1, autoClickerLevel: 0, autoClickers: [] };
-        clearAutoClickers();
+        gameState = { counter: 0, upgradeLevel: 1, autoClickerLevel: 0, clickMultiplier: 1, autoClickers: [] };
         updateUI();
     }
 
@@ -305,42 +288,106 @@
     function changeSlot(slot) {
         currentSlot = slot;
         document.getElementById('currentSlotText').textContent = `Обраний слот: ${currentSlot.name}`;
-        updateUI();
-    }
-
-    function renameSlot() {
-        let newSlotName = document.getElementById("slotNameInput").value.trim();
-
-        if (newSlotName === "") {
-            alert("Будь ласка, введіть ім'я для слота.");
-            return;
-        }
-
-        const slotIndex = slots.findIndex(slot => slot.id === currentSlot.id);
-        if (slotIndex !== -1) {
-            slots[slotIndex].name = newSlotName;
-            localStorage.setItem("slots", JSON.stringify(slots));
-            alert(`Слот перейменовано на: ${newSlotName}`);
-            renderSlots();
-            updateUI();
-        }
     }
 
     function renderSlots() {
-        let container = document.getElementById("slotsContainer");
-        container.innerHTML = "";
+        const slotsContainer = document.getElementById('slotsContainer');
+        slotsContainer.innerHTML = '';
         slots.forEach(slot => {
-            let button = document.createElement("button");
+            const button = document.createElement('button');
             button.textContent = slot.name;
             button.onclick = () => changeSlot(slot);
-            container.appendChild(button);
+            slotsContainer.appendChild(button);
         });
     }
 
-    // Завантаження слотів при завантаженні сторінки
     renderSlots();
-    updateUI();
 </script>
 
 </body>
+<!---
+1. saveGameState()
+
+Призначення: Зберігає поточний стан гри в локальне сховище браузера.
+
+Робота: Всі дані гри, збережені в об'єкті gameState, зберігаються в локальному сховищі під ключем, що включає ID поточного слота (для кожного слота свій прогрес).
+
+2. loadGameState()
+
+Призначення: Завантажує збережений стан гри зі слотів.
+
+Робота: Читає збережений стан гри з локального сховища за відповідним ключем. Якщо збережений стан знайдений, відновлюються всі налаштування гри (включаючи автокліки). Якщо слот порожній, виводиться відповідне повідомлення.
+
+3. clearSlot()
+
+Призначення: Очищає слот.
+
+Робота: Видаляє збережений стан гри для поточного слота з локального сховища.
+
+4. resetGame()
+
+Призначення: Скидає гру до початкового стану.
+
+Робота: Оновлює об'єкт gameState до його початкових значень (лічильник на 0, рівень покращення 1, тощо) і скидає автокліки.
+
+5. updateUI()
+
+Призначення: Оновлює користувацький інтерфейс (UI) гри.
+
+Робота: Оновлює відображення лічильника кліків, кнопок для покупок покращень та автокліків, а також стан кнопки автокліка в залежності від кількості наявних NotCoins.
+
+6. addSlot()
+
+Призначення: Додає новий слот.
+
+Робота: Створює новий слот з автоматично згенерованим ім'ям ("Слот №") і додає його в масив слотів. Нові слоти зберігаються в локальному сховищі.
+
+7. deleteSlot()
+
+Призначення: Видаляє поточний слот.
+
+Робота: Видаляє поточний слот з масиву слотів і оновлює відображення всіх слотів.
+
+8. changeSlot(slot)
+
+Призначення: Змінює активний слот.
+
+Робота: Встановлює новий слот як поточний, оновлює текст про поточний слот і оновлює UI гри.
+
+9. renameSlot()
+
+Призначення: Змінює ім'я поточного слота.
+
+Робота: Вводиться нове ім'я для слота, яке оновлюється в масиві слотів і в локальному сховищі.
+
+10. renderSlots()
+
+Призначення: Відображає всі слоти.
+
+Робота: Створює кнопки для кожного слота і додає їх на екран, дозволяючи змінювати активний слот.
+
+11. incrementCounter(event)
+
+Призначення: Збільшує лічильник кліків.
+
+Робота: При натисканні на монету (яка є зображенням з класом click-image), лічильник збільшується на 1.
+
+12. buyUpgrade()
+
+Призначення: Купує покращення для гри.
+
+Робота: Зменшує кількість NotCoins для покупки покращення та збільшує рівень покращення гри.
+
+13. startAutoClicker()
+
+Призначення: Купує автоклікер.
+
+Робота: Якщо гравець має достатньо NotCoins, ця функція дозволяє купити автоматичний клікер, який збільшує лічильник кліків автоматично.
+
+14. Анімація літучої монети (клас .flying-coin)
+
+Призначення: Створення анімації для летючої монети.
+
+Робота: Коли користувач натискає на монету, вона анімується за допомогою CSS (переміщається і зникає).-->
+
 </html>
