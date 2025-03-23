@@ -120,8 +120,6 @@
         filter: drop-shadow(0 0 10px rgba(255, 255, 0, 0.8)); /* додана тінь до монети */
     }
 </style>
-
-    </style>
 </head>
 <body>
 
@@ -180,6 +178,7 @@
     let slots = JSON.parse(localStorage.getItem("slots")) || [{id: 1, name: "Слот 1"}];
     let currentSlot = slots[0];
 
+    // Fix: incrementCounter function is defined here
     function incrementCounter(event) {
         gameState.counter += gameState.clickMultiplier;  // Збільшуємо на множник
         document.getElementById('counter').textContent = gameState.counter;
@@ -255,139 +254,62 @@
         alert(`Слот ${currentSlot.name} очищено!`);
     }
 
-    function resetGame() {
-        gameState = { counter: 0, upgradeLevel: 1, autoClickerLevel: 0, clickMultiplier: 1, autoClickers: [] };
-        updateUI();
-    }
-
     function updateUI() {
         document.getElementById('counter').textContent = gameState.counter;
-        document.getElementById('upgradeButton').textContent = `Купити покращення (Вартість: ${10 * gameState.upgradeLevel} NotCoins)`;
-        document.getElementById('autoClickerButton').disabled = gameState.counter < 50;
+        const upgradeButton = document.getElementById('upgradeButton');
+        const autoClickerButton = document.getElementById('autoClickerButton');
+        upgradeButton.textContent = `Купити покращення (Вартість: ${10 * gameState.upgradeLevel} NotCoins)`;
+        autoClickerButton.textContent = `Купити Автоклік (Вартість: 50 NotCoins)`;
     }
 
+    // Manage slots
     function addSlot() {
-        const newSlotName = `Слот ${slots.length + 1}`;
-        const newSlot = { id: slots.length + 1, name: newSlotName };
-        slots.push(newSlot);
-        localStorage.setItem("slots", JSON.stringify(slots));
-        renderSlots();
+        const newSlotId = slots.length + 1;
+        const newSlotName = `Слот ${newSlotId}`;
+        slots.push({id: newSlotId, name: newSlotName});
+        updateSlotsUI();
     }
 
     function deleteSlot() {
-        const index = slots.indexOf(currentSlot);
-        if (index !== -1) {
-            slots.splice(index, 1);
-            localStorage.setItem("slots", JSON.stringify(slots));
+        if (slots.length > 1) {
+            slots = slots.filter(slot => slot.id !== currentSlot.id);
             currentSlot = slots[0];
-            updateUI();
-            renderSlots();
+            updateSlotsUI();
+        } else {
+            alert("Не можна видаляти останній слот!");
         }
     }
 
-    function changeSlot(slot) {
-        currentSlot = slot;
-        document.getElementById('currentSlotText').textContent = `Обраний слот: ${currentSlot.name}`;
-    }
+    function updateSlotsUI() {
+        localStorage.setItem("slots", JSON.stringify(slots));
 
-    function renderSlots() {
-        const slotsContainer = document.getElementById('slotsContainer');
-        slotsContainer.innerHTML = '';
+        const slotsContainer = document.getElementById("slotsContainer");
+        slotsContainer.innerHTML = "";
+
         slots.forEach(slot => {
-            const button = document.createElement('button');
+            const button = document.createElement("button");
             button.textContent = slot.name;
-            button.onclick = () => changeSlot(slot);
+            button.onclick = () => {
+                currentSlot = slot;
+                document.getElementById("currentSlotText").textContent = `Обраний слот: ${slot.name}`;
+            };
             slotsContainer.appendChild(button);
         });
     }
 
-    renderSlots();
+    function renameSlot() {
+        const newSlotName = document.getElementById("slotNameInput").value;
+        if (newSlotName.trim()) {
+            currentSlot.name = newSlotName;
+            updateSlotsUI();
+        } else {
+            alert("Введіть нове ім'я для слота!");
+        }
+    }
+
+    updateSlotsUI(); // Initial slot display
+    updateUI(); // Initial UI update
 </script>
 
 </body>
-<!---
-1. saveGameState()
-
-Призначення: Зберігає поточний стан гри в локальне сховище браузера.
-
-Робота: Всі дані гри, збережені в об'єкті gameState, зберігаються в локальному сховищі під ключем, що включає ID поточного слота (для кожного слота свій прогрес).
-
-2. loadGameState()
-
-Призначення: Завантажує збережений стан гри зі слотів.
-
-Робота: Читає збережений стан гри з локального сховища за відповідним ключем. Якщо збережений стан знайдений, відновлюються всі налаштування гри (включаючи автокліки). Якщо слот порожній, виводиться відповідне повідомлення.
-
-3. clearSlot()
-
-Призначення: Очищає слот.
-
-Робота: Видаляє збережений стан гри для поточного слота з локального сховища.
-
-4. resetGame()
-
-Призначення: Скидає гру до початкового стану.
-
-Робота: Оновлює об'єкт gameState до його початкових значень (лічильник на 0, рівень покращення 1, тощо) і скидає автокліки.
-
-5. updateUI()
-
-Призначення: Оновлює користувацький інтерфейс (UI) гри.
-
-Робота: Оновлює відображення лічильника кліків, кнопок для покупок покращень та автокліків, а також стан кнопки автокліка в залежності від кількості наявних NotCoins.
-
-6. addSlot()
-
-Призначення: Додає новий слот.
-
-Робота: Створює новий слот з автоматично згенерованим ім'ям ("Слот №") і додає його в масив слотів. Нові слоти зберігаються в локальному сховищі.
-
-7. deleteSlot()
-
-Призначення: Видаляє поточний слот.
-
-Робота: Видаляє поточний слот з масиву слотів і оновлює відображення всіх слотів.
-
-8. changeSlot(slot)
-
-Призначення: Змінює активний слот.
-
-Робота: Встановлює новий слот як поточний, оновлює текст про поточний слот і оновлює UI гри.
-
-9. renameSlot()
-
-Призначення: Змінює ім'я поточного слота.
-
-Робота: Вводиться нове ім'я для слота, яке оновлюється в масиві слотів і в локальному сховищі.
-
-10. renderSlots()
-
-Призначення: Відображає всі слоти.
-
-Робота: Створює кнопки для кожного слота і додає їх на екран, дозволяючи змінювати активний слот.
-
-11. incrementCounter(event)
-
-Призначення: Збільшує лічильник кліків.
-
-Робота: При натисканні на монету (яка є зображенням з класом click-image), лічильник збільшується на 1.
-
-12. buyUpgrade()
-
-Призначення: Купує покращення для гри.
-
-Робота: Зменшує кількість NotCoins для покупки покращення та збільшує рівень покращення гри.
-
-13. startAutoClicker()
-
-Призначення: Купує автоклікер.
-
-Робота: Якщо гравець має достатньо NotCoins, ця функція дозволяє купити автоматичний клікер, який збільшує лічильник кліків автоматично.
-
-14. Анімація літучої монети (клас .flying-coin)
-
-Призначення: Створення анімації для летючої монети.
-
-Робота: Коли користувач натискає на монету, вона анімується за допомогою CSS (переміщається і зникає).-->
-
 </html>
