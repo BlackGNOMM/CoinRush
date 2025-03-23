@@ -168,157 +168,158 @@
 
 <script>
     let gameState = {
-        counter: 0,
-        upgradeLevel: 1,
-        autoClickerLevel: 0, // Keep track of auto-clicker level
-        autoClickers: [],
-        clickMultiplier: 1, // Click multiplier
-        autoClickerInterval: null // Interval for auto-clicking
-    };
+    counter: 0,
+    upgradeLevel: 1,
+    autoClickerLevel: 0, // Keep track of auto-clicker level
+    autoClickers: [],
+    clickMultiplier: 1, // Click multiplier
+    autoClickerInterval: null // Interval for auto-clicking
+};
 
-    let slots = JSON.parse(localStorage.getItem("slots")) || [{id: 1, name: "Слот 1"}];
-    let currentSlot = slots[0];
+let slots = JSON.parse(localStorage.getItem("slots")) || [{id: 1, name: "Слот 1"}];
+let currentSlot = slots[0];
 
-    function incrementCounter(event) {
-        gameState.counter += gameState.clickMultiplier;
-        document.getElementById('counter').textContent = gameState.counter;
-        animateCoin(event);
+function incrementCounter(event) {
+    gameState.counter += gameState.clickMultiplier;
+    document.getElementById('counter').textContent = gameState.counter;
+    animateCoin(event);
+}
+
+function animateCoin(event) {
+    const coin = document.createElement('img');
+    coin.src = "image_no_bg.png";
+    coin.classList.add('flying-coin');
+    document.body.appendChild(coin);
+
+    const rect = event.target.getBoundingClientRect();
+    const startX = rect.left + rect.width / 2;
+    const startY = rect.top + rect.height / 2;
+
+    coin.style.left = `${startX}px`;
+    coin.style.top = `${startY}px`;
+
+    const endX = window.innerWidth / 2;
+    const endY = 100;
+
+    const deltaX = endX - startX;
+    const deltaY = endY - startY;
+
+    coin.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+
+    coin.addEventListener('transitionend', () => {
+        coin.remove();
+    });
+}
+
+function buyUpgrade() {
+    const upgradeCost = 10 * gameState.upgradeLevel;
+    if (gameState.counter >= upgradeCost) {
+        gameState.counter -= upgradeCost;
+        gameState.upgradeLevel++;
+        gameState.clickMultiplier++; // Increase click multiplier
+        updateUI();
+    } else {
+        alert("Немає достатньо NotCoins!");
     }
+}
 
-    function animateCoin(event) {
-        const coin = document.createElement('img');
-        coin.src = "image_no_bg.png";
-        coin.classList.add('flying-coin');
-        document.body.appendChild(coin);
+function startAutoClicker() {
+    if (gameState.counter >= 50) {
+        gameState.counter -= 50;
+        gameState.autoClickerLevel++; // Збільшуємо рівень автоклікера
+        updateUI();
 
-        const rect = event.target.getBoundingClientRect();
-        const startX = rect.left + rect.width / 2;
-        const startY = rect.top + rect.height / 2;
-
-        coin.style.left = `${startX}px`;
-        coin.style.top = `${startY}px`;
-
-        const endX = window.innerWidth / 2;
-        const endY = 100;
-
-        const deltaX = endX - startX;
-        const deltaY = endY - startY;
-
-        coin.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-
-        coin.addEventListener('transitionend', () => {
-            coin.remove();
-        });
-    }
-
-    function buyUpgrade() {
-        const upgradeCost = 10 * gameState.upgradeLevel;
-        if (gameState.counter >= upgradeCost) {
-            gameState.counter -= upgradeCost;
-            gameState.upgradeLevel++;
-            gameState.clickMultiplier++; // Increase click multiplier
-            updateUI();
-        } else {
-            alert("Немає достатньо NotCoins!");
+        if (gameState.autoClickerInterval) {
+            clearInterval(gameState.autoClickerInterval); // Очистити старий інтервал
         }
+
+        // Створюємо новий інтервал для автокліків
+        gameState.autoClickerInterval = setInterval(() => {
+            gameState.counter += gameState.autoClickerLevel; // Додаємо монети за рівень автоклікера
+            document.getElementById('counter').textContent = gameState.counter;
+        }, 1000); // Автоклік кожну секунду
+    } else {
+        alert("Немає достатньо NotCoins!");
     }
+}
 
-    function startAutoClicker() {
-        if (gameState.counter >= 50) {
-            gameState.counter -= 50;
-            gameState.autoClickerLevel++;
-            updateUI();
+function saveGameState() {
+    localStorage.setItem(`notcoinGameState_${currentSlot.id}`, JSON.stringify(gameState));
+    alert(`Прогрес збережено у слот ${currentSlot.name}!`);
+}
 
-            if (gameState.autoClickerInterval) {
-                clearInterval(gameState.autoClickerInterval); // Clear any existing interval
-            }
-
-            // Set interval for auto-clicking based on the level
-            gameState.autoClickerInterval = setInterval(() => {
-                gameState.counter += gameState.autoClickerLevel;
-                document.getElementById('counter').textContent = gameState.counter;
-            }, 1000); // Auto-click every second
-        } else {
-            alert("Немає достатньо NotCoins!");
-        }
+function loadGameState() {
+    const savedState = localStorage.getItem(`notcoinGameState_${currentSlot.id}`);
+    if (savedState) {
+        gameState = JSON.parse(savedState);
+        updateUI();
+        alert(`Прогрес завантажено зі слота ${currentSlot.name}!`);
+    } else {
+        alert(`Слот ${currentSlot.name} порожній!`);
     }
+}
 
-    function saveGameState() {
-        localStorage.setItem(`notcoinGameState_${currentSlot.id}`, JSON.stringify(gameState));
-        alert(`Прогрес збережено у слот ${currentSlot.name}!`);
-    }
+function clearSlot() {
+    localStorage.removeItem(`notcoinGameState_${currentSlot.id}`);
+    alert(`Слот ${currentSlot.name} очищено!`);
+}
 
-    function loadGameState() {
-        const savedState = localStorage.getItem(`notcoinGameState_${currentSlot.id}`);
-        if (savedState) {
-            gameState = JSON.parse(savedState);
-            updateUI();
-            alert(`Прогрес завантажено зі слота ${currentSlot.name}!`);
-        } else {
-            alert(`Слот ${currentSlot.name} порожній!`);
-        }
-    }
+function updateUI() {
+    document.getElementById('counter').textContent = gameState.counter;
+    const upgradeButton = document.getElementById('upgradeButton');
+    const autoClickerButton = document.getElementById('autoClickerButton');
+    upgradeButton.textContent = `Купити покращення (Вартість: ${10 * gameState.upgradeLevel} NotCoins)`;
+    autoClickerButton.textContent = `Купити Автоклік (Вартість: 50 NotCoins) - ${gameState.autoClickerLevel} рівень`;
+}
 
-    function clearSlot() {
-        localStorage.removeItem(`notcoinGameState_${currentSlot.id}`);
-        alert(`Слот ${currentSlot.name} очищено!`);
-    }
+// Manage slots
+function addSlot() {
+    const newSlotId = slots.length + 1;
+    const newSlotName = `Слот ${newSlotId}`;
+    slots.push({id: newSlotId, name: newSlotName});
+    updateSlotsUI();
+}
 
-    function updateUI() {
-        document.getElementById('counter').textContent = gameState.counter;
-        const upgradeButton = document.getElementById('upgradeButton');
-        const autoClickerButton = document.getElementById('autoClickerButton');
-        upgradeButton.textContent = `Купити покращення (Вартість: ${10 * gameState.upgradeLevel} NotCoins)`;
-        autoClickerButton.textContent = `Купити Автоклік (Вартість: 50 NotCoins) - ${gameState.autoClickerLevel} рівень`;
-    }
-
-    // Manage slots
-    function addSlot() {
-        const newSlotId = slots.length + 1;
-        const newSlotName = `Слот ${newSlotId}`;
-        slots.push({id: newSlotId, name: newSlotName});
+function deleteSlot() {
+    if (slots.length > 1) {
+        slots = slots.filter(slot => slot.id !== currentSlot.id);
+        currentSlot = slots[0];
         updateSlotsUI();
+    } else {
+        alert("Не можна видаляти останній слот!");
     }
+}
 
-    function deleteSlot() {
-        if (slots.length > 1) {
-            slots = slots.filter(slot => slot.id !== currentSlot.id);
-            currentSlot = slots[0];
-            updateSlotsUI();
-        } else {
-            alert("Не можна видаляти останній слот!");
-        }
+function updateSlotsUI() {
+    localStorage.setItem("slots", JSON.stringify(slots));
+
+    const slotsContainer = document.getElementById("slotsContainer");
+    slotsContainer.innerHTML = "";
+
+    slots.forEach(slot => {
+        const button = document.createElement("button");
+        button.textContent = slot.name;
+        button.onclick = () => {
+            currentSlot = slot;
+            document.getElementById("currentSlotText").textContent = `Обраний слот: ${slot.name}`;
+        };
+        slotsContainer.appendChild(button);
+    });
+}
+
+function renameSlot() {
+    const newSlotName = document.getElementById("slotNameInput").value;
+    if (newSlotName.trim()) {
+        currentSlot.name = newSlotName;
+        updateSlotsUI();
+    } else {
+        alert("Введіть нове ім'я для слота!");
     }
+}
 
-    function updateSlotsUI() {
-        localStorage.setItem("slots", JSON.stringify(slots));
+updateSlotsUI(); // Initial slot display
+updateUI(); // Initial UI update
 
-        const slotsContainer = document.getElementById("slotsContainer");
-        slotsContainer.innerHTML = "";
-
-        slots.forEach(slot => {
-            const button = document.createElement("button");
-            button.textContent = slot.name;
-            button.onclick = () => {
-                currentSlot = slot;
-                document.getElementById("currentSlotText").textContent = `Обраний слот: ${slot.name}`;
-            };
-            slotsContainer.appendChild(button);
-        });
-    }
-
-    function renameSlot() {
-        const newSlotName = document.getElementById("slotNameInput").value;
-        if (newSlotName.trim()) {
-            currentSlot.name = newSlotName;
-            updateSlotsUI();
-        } else {
-            alert("Введіть нове ім'я для слота!");
-        }
-    }
-
-    updateSlotsUI(); // Initial slot display
-    updateUI(); // Initial UI update
 </script>
 
 
