@@ -170,17 +170,17 @@
     let gameState = {
         counter: 0,
         upgradeLevel: 1,
-        autoClickerLevel: 0,
+        autoClickerLevel: 0, // Keep track of auto-clicker level
         autoClickers: [],
-        clickMultiplier: 1 // Додаємо множник для кожного кліку
+        clickMultiplier: 1, // Click multiplier
+        autoClickerInterval: null // Interval for auto-clicking
     };
 
     let slots = JSON.parse(localStorage.getItem("slots")) || [{id: 1, name: "Слот 1"}];
     let currentSlot = slots[0];
 
-    // Fix: incrementCounter function is defined here
     function incrementCounter(event) {
-        gameState.counter += gameState.clickMultiplier;  // Збільшуємо на множник
+        gameState.counter += gameState.clickMultiplier;
         document.getElementById('counter').textContent = gameState.counter;
         animateCoin(event);
     }
@@ -216,7 +216,7 @@
         if (gameState.counter >= upgradeCost) {
             gameState.counter -= upgradeCost;
             gameState.upgradeLevel++;
-            gameState.clickMultiplier++; // Збільшуємо множник за клік
+            gameState.clickMultiplier++; // Increase click multiplier
             updateUI();
         } else {
             alert("Немає достатньо NotCoins!");
@@ -228,6 +228,16 @@
             gameState.counter -= 50;
             gameState.autoClickerLevel++;
             updateUI();
+
+            if (gameState.autoClickerInterval) {
+                clearInterval(gameState.autoClickerInterval); // Clear any existing interval
+            }
+
+            // Set interval for auto-clicking based on the level
+            gameState.autoClickerInterval = setInterval(() => {
+                gameState.counter += gameState.autoClickerLevel;
+                document.getElementById('counter').textContent = gameState.counter;
+            }, 1000); // Auto-click every second
         } else {
             alert("Немає достатньо NotCoins!");
         }
@@ -259,7 +269,7 @@
         const upgradeButton = document.getElementById('upgradeButton');
         const autoClickerButton = document.getElementById('autoClickerButton');
         upgradeButton.textContent = `Купити покращення (Вартість: ${10 * gameState.upgradeLevel} NotCoins)`;
-        autoClickerButton.textContent = `Купити Автоклік (Вартість: 50 NotCoins)`;
+        autoClickerButton.textContent = `Купити Автоклік (Вартість: 50 NotCoins) - ${gameState.autoClickerLevel} рівень`;
     }
 
     // Manage slots
@@ -310,6 +320,7 @@
     updateSlotsUI(); // Initial slot display
     updateUI(); // Initial UI update
 </script>
+
 
 </body>
 </html>
